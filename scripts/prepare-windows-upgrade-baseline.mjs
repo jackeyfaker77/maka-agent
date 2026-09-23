@@ -50,7 +50,8 @@ export async function prepareWindowsUpgradeBaseline(
   outputDirectory,
   {
     manifestPath = defaultManifestPath,
-    repository = process.env.GITHUB_REPOSITORY ?? 'apache/maka',
+    // The pinned installer belongs to upstream, including when CI runs in a fork.
+    repository = 'apache/maka',
     run = runFile,
     checksum = sha256File,
   } = {},

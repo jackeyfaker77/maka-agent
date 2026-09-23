@@ -91,6 +91,21 @@ test('an absent installer is downloaded and verified', async () => {
   }
 });
 
+test('a fork downloads the pinned baseline from upstream', async () => {
+  const previousRepository = process.env.GITHUB_REPOSITORY;
+  process.env.GITHUB_REPOSITORY = 'example/maka-fork';
+  const { downloads, prepare, root } = scenario({ cached: undefined });
+  try {
+    await prepare();
+    const args = downloads[0][1];
+    assert.equal(args[args.indexOf('--repo') + 1], 'apache/maka');
+  } finally {
+    if (previousRepository === undefined) delete process.env.GITHUB_REPOSITORY;
+    else process.env.GITHUB_REPOSITORY = previousRepository;
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('a cached installer with the wrong digest is replaced rather than trusted', async () => {
   // The cache is not an authority on what this lane installs. First call is the
   // stale entry, second is the fresh download, which must be the one verified.
